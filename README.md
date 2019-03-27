@@ -1,1 +1,1 @@
-# birghtness
+# brightness
