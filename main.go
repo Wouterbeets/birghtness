@@ -10,8 +10,8 @@ import (
 )
 
 func main() {
-	up := flag.Int("up", 0, "up birghtness")
-	down := flag.Int("down", 0, "up birghtness")
+	up := flag.Int("up", 0, "up brightness")
+	down := flag.Int("down", 0, "up brightness")
 	flag.Parse()
 	var modif int
 	if *up != 0 {
@@ -19,6 +19,7 @@ func main() {
 	} else if *down != 0 {
 		modif = -*down
 	} else {
+    		fmt.Println("no arguments given")
 		return
 	}
 
