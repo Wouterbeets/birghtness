@@ -3,78 +3,31 @@ package main
 import (
 	"flag"
 	"fmt"
-	"io/ioutil"
 	"log"
-	"os"
-	"strconv"
-	"strings"
 
-	"github.com/wouterbeets/brightness/storage"
-
+	"github.com/wouterbeets/brightness/pkg/bright"
 )
 
-func readFile(path string) (int, error) {
-	f, err := os.Open(path)
-	if err != nil {
-		return 0, err
-	}
-	br, err := ioutil.ReadAll(f)
-	if err != nil {
-		return 0, err
-	}
-
-	currentStr := strings.Trim(string(br), "\n")
-	current, err := strconv.Atoi(currentStr)
-	if err != nil {
-		return 0, err
-	}
-	return current, nil
-}
-
 func main() {
-	up := flag.Int("up", 0, "up brightness")
-	down := flag.Int("down", 0, "down brightness")
+	up := flag.Float64("up", 0, "up brightness by x percentage points")
+	down := flag.Float64("down", 0, "down brightness by x percentage points")
 	flag.Parse()
 
-	var modif int
+	var modif float64
 	if *up != 0 {
 		modif = *up
 	} else if *down != 0 {
 		modif = -*down
-	}
-
-	max, err := storage.MaxBrightness()
-	if err != nil {
-		log.Fatal(err)
-	}
-	brightness, err := storage.MaxBrightness()
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	var currentPercentage float64
-	if modif == 0 {
-		currentPercentage = float64(brightness) / float64(max)
-		fmt.Printf("%.2f\n", currentPercentage)
+	} else {
+		c, err := bright.Current()
+		if err != nil {
+			log.Fatal(err.Error())
+		}
+		fmt.Println(c)
 		return
 	}
-
-	newBrightness := brightness + modif
-	if newBrightness > max {
-		newBrightness = max
-	}
-
-	if newBrightness < 1000 {
-		newBrightness = 1000
-	}
-
-	f, err := os.Create("/sys/class/backlight/intel_backlight/brightness")
+	err := bright.Modify(modif / 100)
 	if err != nil {
-		panic(err)
+		log.Fatal(err.Error())
 	}
-	_, err = f.WriteString(strconv.Itoa(newBrightness))
-	if err != nil {
-		panic(err)
-	}
-
 }

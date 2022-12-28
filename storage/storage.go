@@ -14,11 +14,11 @@ var (
 )
 
 func MaxBrightness() (int, error) {
-	return readIntFromFile(brightnessFilePath)
+	return readIntFromFile(maxBrightnessFilePath)
 }
 
 func Brightness() (int, error) {
-	return readIntFromFile(maxBrightnessFilePath)
+	return readIntFromFile(brightnessFilePath)
 }
 
 func ModifyBrightness(b int) error {
